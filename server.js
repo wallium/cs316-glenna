@@ -112,4 +112,6 @@ var server = app.listen(port_number, function () {
 
   console.log("Example app listening at http://%s:%s", host, port)
   console.log(util.format("date is %s", new Date()));
+  console.log("Database is at:");
+  console.log(process.env.DATABASE_URL);
 })
