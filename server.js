@@ -91,6 +91,15 @@ app.get('/posts', function(req, res) {
   });
 })
 
+function formatTag (tag) {
+  if (tag == null) {
+    return '';
+  }
+  return tag;
+}
+
+
+
 // DELETE posts if the end date is less than the current date
 function deleteByDate(date) {
   app.post('/posts/delete', urlencodedParser, function (req, res) {
