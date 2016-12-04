@@ -5,6 +5,8 @@ var pg = require('pg');
 var bodyParser = require('body-parser');
 const util = require('util');
 var db_url = process.env.DATABASE_URL;
+var cors = require('cors');
+app.use(cors({credentials: true, origin: true}));
 
 // Create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
@@ -82,6 +84,10 @@ app.get('/posts', function(req, res) {
     console.log(query);
 
     client.query(query).on('row', function(row){
+      row.tag_1 = formatTag(row.tag_1);
+      row.tag_2 = formatTag(row.tag_2);
+      row.tag_3 = formatTag(row.tag_3);
+
       response.push(row);
       console.log("Content of Posts:")
       console.log(JSON.stringify(row));
@@ -96,6 +102,10 @@ function formatTag (tag) {
     return '';
   }
   return tag;
+}
+
+function formatDate (date) {
+  
 }
 
 
