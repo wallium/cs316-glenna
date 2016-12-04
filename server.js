@@ -109,8 +109,8 @@ function formatDate (timestamp) {
   var date = "" + timestamp;
   console.log(date);
   console.log("*************************");
-  var formatted = date.substring(0, 4) + '/' + date.substring(5, 7) + '/' + date.substring(8, 10) + ' ';
-  var time = date.substring(11, 16);
+  var formatted = date.substring(0, 17);
+  var time = date.substring(17, 22);
   var hour = parseInt(time.substring(0,2));
   formatted = formatted + (hour % 12) + time.substring(2);
   if (hour > 12) {
