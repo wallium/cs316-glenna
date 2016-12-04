@@ -74,10 +74,10 @@ app.get('/posts', function(req, res) {
     var i = 0;
     console.log(req.query);
     console.log("******************");
-    
+
     var query = util.format('SELECT title, body, start_time, end_time, user_id AS poster, tag1, tag2, tag3 ' +
       'FROM Post INNER JOIN Location ON Post.location_id = Location.id ' + 
-      'WHERE Location.name = %s', 
+      'WHERE Location.name = "%s"', 
       req.query.location);
     client.query(query).on('row', function(row){
       response.push(row);
