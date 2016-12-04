@@ -105,7 +105,8 @@ function formatTag (tag) {
   return tag;
 }
 
-function formatDate (date) {
+function formatDate (timestamp) {
+  var date = "" + timestamp;
   var formatted = date.substring(0, 4) + '/' + date.substring(5, 7) + '/' + date.substring(8, 10) + ' ';
   var time = date.substring(11, 16);
   var hour = parseInt(time.substring(0,2));
