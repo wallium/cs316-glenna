@@ -79,9 +79,11 @@ app.get('/posts', function(req, res) {
       'FROM Post INNER JOIN Location ON Post.location_id = Location.id ' + 
       'WHERE Location.name = "%s"', 
       req.query.location);
+    console.log(query);
+    
     client.query(query).on('row', function(row){
       response.push(row);
-      console.log("Content of Users:")
+      console.log("Content of Posts:")
       console.log(JSON.stringify(row));
     }).on("end", function() {
       res.end(JSON.stringify(response));
