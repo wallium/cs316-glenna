@@ -87,7 +87,8 @@ app.get('/posts', function(req, res) {
       row.tag_1 = formatTag(row.tag_1);
       row.tag_2 = formatTag(row.tag_2);
       row.tag_3 = formatTag(row.tag_3);
-
+      row.start_time = formatDate(row.start_time);
+      row.end_time = formatDate(row.end_time);
       response.push(row);
       console.log("Content of Posts:")
       console.log(JSON.stringify(row));
@@ -105,7 +106,16 @@ function formatTag (tag) {
 }
 
 function formatDate (date) {
-  
+  var formatted = date.substring(0, 4) + '/' + date.substring(5, 7) + '/' + date.substring(8, 10) + ' ';
+  var time = date.substring(11, 16);
+  var hour = parseInt(time.substring(0,2));
+  formatted = formatted + (hour % 12) + hour.substring(2);
+  if (hour > 12) {
+    formatted = formatted + ' PM';
+  } else {
+    formatted = formatted + ' AM';
+  }
+  return formatted;
 }
 
 
