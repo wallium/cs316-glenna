@@ -4,7 +4,7 @@ require('es6-promise').polyfill();
 var pg = require('pg');
 var bodyParser = require('body-parser');
 const util = require('util');
-// var db = 'postgres://wfkyiafdxkqhgx:HlMV9WCE-OWOs7WKXeHai6opi0@ec2-54-243-195-160.compute-1.amazonaws.com:5432/d3je1pifhdpsdp';
+var db_url = process.env.DATABASE_URL;
 
 // Create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
@@ -19,7 +19,7 @@ app.get('/', function (req, res) {
 
 app.get('/users', function(req, res) {
   response = [];
-  pg.connect(db, function(err, client) {
+  pg.connect(db_url, function(err, client) {
     if (err) {
       console.log("Ran into error");
       throw err;
@@ -37,7 +37,7 @@ app.get('/users', function(req, res) {
 
 
 app.post('/users', urlencodedParser, function (req, res) {
-  pg.connect(db, function(err, client) {
+  pg.connect(db_url, function(err, client) {
     if (err) {
       console.log("Ran into error");
       throw err;
@@ -50,7 +50,7 @@ app.post('/users', urlencodedParser, function (req, res) {
 })
 
 app.post('/users/delete', urlencodedParser, function (req, res) {
-  pg.connect(db, function(err, client) {
+  pg.connect(db_url, function(err, client) {
     if (err) {
       console.log("Ran into error");
       throw err;
@@ -66,13 +66,16 @@ app.post('/users/delete', urlencodedParser, function (req, res) {
 // GET posts, filtered by location
 app.get('/posts', function(req, res) {
   response = [];
-  pg.connect(db, function(err, client) {
+  pg.connect(db_url, function(err, client) {
     if (err) {
       console.log("Ran into error");
       throw err;
     } 
     var i = 0;
-    var query = util.format('SELECT * from Posts WHERE Location = %s;', req.body.location);
+    var query = util.format('SELECT title, body, start_time, end_time, user_id AS poster, tag1, tag2, tag3 ' +
+      'FROM Post INNER JOIN Location ON Post.location_id = Location.id ' + 
+      'WHERE Location.name = %s', 
+      req.body.location);
     client.query(query).on('row', function(row){
       response.push(row);
       console.log("Content of Users:")
@@ -86,7 +89,7 @@ app.get('/posts', function(req, res) {
 // DELETE posts if the end date is less than the current date
 function deleteByDate(date) {
   app.post('/posts/delete', urlencodedParser, function (req, res) {
-    pg.connect(db, function(err, client) {
+    pg.connect(db_url, function(err, client) {
       if (err) {
         console.log("Ran into error");
         throw err;
