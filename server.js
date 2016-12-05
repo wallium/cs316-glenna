@@ -109,8 +109,8 @@ function formatDate (timestamp) {
   var date = "" + timestamp;
   console.log(date);
   console.log("*************************");
-  var formatted = date.substring(0, 17);
-  var time = date.substring(17, 22);
+  var formatted = date.substring(0, 16);
+  var time = date.substring(16, 21);
   var hour = parseInt(time.substring(0,2));
   console.log(time);
   console.log(hour);
