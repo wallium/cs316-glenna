@@ -80,7 +80,7 @@ app.get('/posts/tags', function(req, res) {
     console.log(req.query);
     console.log("******************");
     var query;
-    if (req.query.tag == "") {
+    if (req.query.tag == "" || req.query.tag == undefined || req.query.tag == null) {
       var query = 'SELECT title, body, start_time, end_time, user_id AS poster, tag_1, tag_2, tag_3, Location.name AS loc ' +
       'FROM Post INNER JOIN Location ON Post.location_id = Location.id;';
     } else {
