@@ -84,7 +84,7 @@ app.get('/posts/tags', function(req, res) {
       var query = 'SELECT title, body, start_time, end_time, user_id AS poster, tag_1, tag_2, tag_3, Location.name AS loc ' +
       'FROM Post INNER JOIN Location ON Post.location_id = Location.id;';
     } else {
-      var query = util.format('SELECT title, body, start_time, end_time, user_id AS poster, tag_1, tag_2, tag_3 ' +
+      var query = util.format('SELECT title, body, start_time, end_time, user_id AS poster, tag_1, tag_2, tag_3, Location.name AS loc ' +
         'FROM Post INNER JOIN Location ON Post.location_id = Location.id ' + 
         "WHERE tag_1 = '%s' OR tag_2 = '%s' OR tag_3 = '%s';", 
         req.query.tag,
@@ -157,7 +157,8 @@ function formatDate (timestamp) {
   var hour = parseInt(time.substring(0,2));
   console.log(time);
   console.log(hour);
-  formatted = formatted + (hour % 12) + time.substring(2);
+  var hour_formatted = (hour % 12) ? (hour % 12) : 12;
+  formatted = formatted + hour_formatted + time.substring(2);
   if (hour > 12) {
     formatted = formatted + ' PM';
   } else {
