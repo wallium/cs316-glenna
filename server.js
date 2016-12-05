@@ -81,11 +81,11 @@ app.get('/posts/tags', function(req, res) {
     console.log("******************");
     var query;
     if (req.query.tag == "" || req.query.tag == undefined || req.query.tag == null) {
-      var query = 'SELECT title, body, start_time, end_time, user_id AS poster, tag_1, tag_2, tag_3, Location.name AS loc ' +
-      'FROM Post INNER JOIN Location ON Post.location_id = Location.id;';
+      var query = 'SELECT title, body, start_time, end_time, Users.username AS poster, tag_1, tag_2, tag_3, Location.name AS loc ' +
+      'FROM (Post INNER JOIN Location ON Post.location_id = Location.id) INNER JOIN Users on Post.user_id = Users.id;';
     } else {
       var query = util.format('SELECT title, body, start_time, end_time, user_id AS poster, tag_1, tag_2, tag_3, Location.name AS loc ' +
-        'FROM Post INNER JOIN Location ON Post.location_id = Location.id ' + 
+        'FROM (Post INNER JOIN Location ON Post.location_id = Location.id) INNER JOIN Users ON Post.user_id = Users.id ' + 
         "WHERE tag_1 = '%s' OR tag_2 = '%s' OR tag_3 = '%s';", 
         req.query.tag,
         req.query.tag,
@@ -120,8 +120,8 @@ app.get('/posts', function(req, res) {
     console.log(req.query);
     console.log("******************");
 
-    var query = util.format('SELECT title, body, start_time, end_time, user_id AS poster, tag_1, tag_2, tag_3 ' +
-      'FROM Post INNER JOIN Location ON Post.location_id = Location.id ' + 
+    var query = util.format('SELECT title, body, start_time, end_time, Users.username AS poster, tag_1, tag_2, tag_3 ' +
+      'FROM (Post INNER JOIN Location ON Post.location_id = Location.id) INNER JOIN Users ON Post.user_id = Users.id ' + 
       "WHERE Location.name = '%s';", 
       req.query.location);
     console.log(query);
@@ -159,7 +159,7 @@ function formatDate (timestamp) {
   console.log(hour);
   var hour_formatted = (hour % 12) ? (hour % 12) : 12;
   formatted = formatted + hour_formatted + time.substring(2);
-  if (hour > 12) {
+  if (hour >= 12) {
     formatted = formatted + ' PM';
   } else {
     formatted = formatted + ' AM';
