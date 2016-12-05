@@ -69,7 +69,7 @@ app.post('/users/delete', urlencodedParser, function (req, res) {
 // GET Requests
 
 // GET all tags
-app.get('/tags', function(req, res) {}
+app.get('/tags', function(req, res) {
   response = [];
   pg.connect(db_url, function(err, client) {
     if (err) {
