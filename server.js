@@ -68,6 +68,97 @@ app.post('/users/delete', urlencodedParser, function (req, res) {
 // *************************************************************
 // GET Requests
 
+// GET all tags
+app.get('/tags', function(req, res) {}
+  response = [];
+  pg.connect(db_url, function(err, client) {
+    if (err) {
+      console.log("Ran into error");
+      throw err;
+    } 
+    var query = 'SELECT * FROM tags ORDER BY title ASC;';
+
+    client.query(query).on('row', function(row){
+      response.push(row);
+      console.log("tag:")
+      console.log(JSON.stringify(row));
+    }).on("end", function() {
+      console.log("TAGS QUERY FINISHED *************");
+      res.end(JSON.stringify(response));
+    });
+  });
+})
+
+// GET validation for a log in
+app.get('/login', function(req, res) {
+  response = [];
+  pg.connect(db_url, function(err, client) {
+    if (err) {
+      console.log("Ran into error");
+      throw err;
+    } 
+    var i = 0;
+    console.log(req.query);
+    console.log("******************");
+
+    var query = util.format('SELECT password' +
+      'FROM Users' + 
+      "WHERE name = '%s';", 
+      req.query.username);
+    console.log(query);
+
+    client.query(query).on('row', function(row){
+      response.push(row);
+      console.log("password:")
+      console.log(JSON.stringify(row));
+    }).on("end", function() {
+      if (response.length < 1) {
+        res.end("fail");
+      } else if (response[0].password == 'req.query.password') {
+        res.end("pass");
+      } else {
+        res.end("fail");
+      }
+      console.log("LOGIN QUERY FINISHED *************");
+    });
+  });
+})
+
+// GET all posts by username
+app.get('/posts/username', function(req, res) {
+  response = [];
+  pg.connect(db_url, function(err, client) {
+    if (err) {
+      console.log("Ran into error");
+      throw err;
+    } 
+    var i = 0;
+    console.log(req.query);
+    console.log("******************");
+
+    var query = util.format('SELECT title, body, start_time, end_time, tag_1, tag_2, tag_3, Location.name AS loc ' +
+      'FROM (Post INNER JOIN Location ON Post.location_id = Location.id) INNER JOIN Users ON Post.user_id = Users.id ' + 
+      "WHERE Users.name = '%s';", 
+      req.query.username);
+    console.log(query);
+
+    client.query(query).on('row', function(row){
+      row.tag_1 = formatTag(row.tag_1);
+      row.tag_2 = formatTag(row.tag_2);
+      row.tag_3 = formatTag(row.tag_3);
+      row.start_time = formatDate(row.start_time);
+      row.end_time = formatDate(row.end_time);
+      response.push(row);
+      console.log("Content of Posts:")
+      console.log(JSON.stringify(row));
+    }).on("end", function() {
+      console.log("USERNAME QUERY FINISHED *************");
+      res.end(JSON.stringify(response));
+    });
+  });
+})
+
+
 // GET posts, filtered by tag
 app.get('/posts/tags', function(req, res) {
   response = [];
@@ -103,6 +194,7 @@ app.get('/posts/tags', function(req, res) {
       console.log("Content of Posts:")
       console.log(JSON.stringify(row));
     }).on("end", function() {
+      console.log("TAG QUERY FINISHED ************");
       res.end(JSON.stringify(response));
     });
   });
@@ -136,6 +228,7 @@ app.get('/posts', function(req, res) {
       console.log("Content of Posts:")
       console.log(JSON.stringify(row));
     }).on("end", function() {
+      console.log("LOCATION QUERY FINISHED *************");
       res.end(JSON.stringify(response));
     });
   });
@@ -155,8 +248,6 @@ function formatDate (timestamp) {
   var formatted = date.substring(0, 16);
   var time = date.substring(16, 21);
   var hour = parseInt(time.substring(0,2));
-  console.log(time);
-  console.log(hour);
   var hour_formatted = (hour % 12) ? (hour % 12) : 12;
   formatted = formatted + hour_formatted + time.substring(2);
   if (hour >= 12) {
