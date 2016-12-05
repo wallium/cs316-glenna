@@ -36,10 +36,23 @@ INSERT INTO Location VALUES (1, 'Bryan Center', 150.0, 200.0);
 INSERT INTO Location VALUES (2, 'West Union', 250.5, 300.6);
 INSERT INTO Location VALUES (3, 'Bus Circle', 350.7, 400.8);
 
+INSERT INTO Location VALUES (1, 'Bryan Center', 36.001174, -78.941041);
+INSERT INTO Location VALUES (2, 'West Union', 36.000925, -78.939289);
+INSERT INTO Location VALUES (3, 'Bus Circle', 36.000964, -78.938309);
+
 INSERT INTO Tags VALUES ('free food');
 INSERT INTO Tags VALUES ('speaker');
 INSERT INTO Tags VALUES ('club');
 
-INSERT INTO Post VALUES (1, 1, 'FOOD', 'Free food!', '2016-12-15 12:00:00', '2016-12-15 1:00:00', '2016-12-4 15:00:00', 1, 0, 'free food', NULL, NULL);
+INSERT INTO Post VALUES (1, 1, 'FOOD', 'Free food!', '2016-12-15 12:00:00', '2016-12-15 13:00:00', '2016-12-4 15:00:00', 1, 0, 'free food', NULL, NULL);
 INSERT INTO Post VALUES (2, 3, 'Prez', 'Obama', '2016-12-16 12:00:00', '2016-12-15 14:00:00', '2016-12-5 12:00:00', 3, 2, 'speaker', NULL, NULL);
 INSERT INTO Post VALUES (3, 1, 'Dance', 'DCD Auditions', '2016-12-14 18:00:00', '2016-12-14 20:00:00', '2016-12-3 13:00:00', 2, 0, 'club', NULL, NULL);
+
+
+UPDATE Location SET (x, y) = (36.001174, -78.941041)
+WHERE id = 1;
+UPDATE Location SET (x, y) = (36.000925, -78.939289)
+WHERE id = 2;
+UPDATE Location SET (x, y) = (36.000964, -78.938309)
+WHERE id = 3;
+UPDATE Location SET name = 'West Campus Bus Stop' WHERE id = 3;

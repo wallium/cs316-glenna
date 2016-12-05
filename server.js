@@ -84,7 +84,7 @@ app.get('/posts/tags', function(req, res) {
       var query = 'SELECT title, body, start_time, end_time, Users.username AS poster, tag_1, tag_2, tag_3, Location.name AS loc ' +
       'FROM (Post INNER JOIN Location ON Post.location_id = Location.id) INNER JOIN Users on Post.user_id = Users.id;';
     } else {
-      var query = util.format('SELECT title, body, start_time, end_time, user_id AS poster, tag_1, tag_2, tag_3, Location.name AS loc ' +
+      var query = util.format('SELECT title, body, start_time, end_time, Users.username AS poster, tag_1, tag_2, tag_3, Location.name AS loc ' +
         'FROM (Post INNER JOIN Location ON Post.location_id = Location.id) INNER JOIN Users ON Post.user_id = Users.id ' + 
         "WHERE tag_1 = '%s' OR tag_2 = '%s' OR tag_3 = '%s';", 
         req.query.tag,
