@@ -112,6 +112,8 @@ function formatDate (timestamp) {
   var formatted = date.substring(0, 17);
   var time = date.substring(17, 22);
   var hour = parseInt(time.substring(0,2));
+  console.log(time);
+  console.log(hour);
   formatted = formatted + (hour % 12) + time.substring(2);
   if (hour > 12) {
     formatted = formatted + ' PM';
