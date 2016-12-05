@@ -65,6 +65,49 @@ app.post('/users/delete', urlencodedParser, function (req, res) {
 })
 
 
+// *************************************************************
+// GET Requests
+
+// GET posts, filtered by tag
+app.get('/posts/tags', function(req, res) {
+  response = [];
+  pg.connect(db_url, function(err, client) {
+    if (err) {
+      console.log("Ran into error");
+      throw err;
+    } 
+    var i = 0;
+    console.log(req.query);
+    console.log("******************");
+    var query;
+    if (req.query.tag == "") {
+      var query = 'SELECT title, body, start_time, end_time, user_id AS poster, tag_1, tag_2, tag_3, Location.name AS loc ' +
+      'FROM Post INNER JOIN Location ON Post.location_id = Location.id;';
+    } else {
+      var query = util.format('SELECT title, body, start_time, end_time, user_id AS poster, tag_1, tag_2, tag_3 ' +
+        'FROM Post INNER JOIN Location ON Post.location_id = Location.id ' + 
+        "WHERE tag_1 = '%s' OR tag_2 = '%s' OR tag_3 = '%s';", 
+        req.query.tag,
+        req.query.tag,
+        req.query.tag);
+    }
+    console.log(query);
+
+    client.query(query).on('row', function(row){
+      row.tag_1 = formatTag(row.tag_1);
+      row.tag_2 = formatTag(row.tag_2);
+      row.tag_3 = formatTag(row.tag_3);
+      row.start_time = formatDate(row.start_time);
+      row.end_time = formatDate(row.end_time);
+      response.push(row);
+      console.log("Content of Posts:")
+      console.log(JSON.stringify(row));
+    }).on("end", function() {
+      res.end(JSON.stringify(response));
+    });
+  });
+})
+
 // GET posts, filtered by location
 app.get('/posts', function(req, res) {
   response = [];
