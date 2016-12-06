@@ -74,6 +74,25 @@ app.post('/new_user', urlencodedParser, function (req, res) {
 
 
 // POST a new post
+var postid = 10;
+pg.connect(db_url, function(err, client, done) {
+  if (err) {
+    console.log("Ran into error");
+    throw err;
+  } 
+  var query = 'SELECT MAX(id) FROM Post;';
+
+  client.query(query).on('row', function(row){
+    console.log(JSON.stringify(row));
+    postid = row.max + 1;
+  }).on("end", function() {
+    console.log("MAX POSTID FOUND*************");
+    console.log("Next postid:");
+    console.log(postid);
+    done();
+  });
+});
+
 app.post('/new_post', urlencodedParser, function (req, res) {
   pg.connect(db_url, function(err, client, done) {
     if (err) {
@@ -83,11 +102,28 @@ app.post('/new_post', urlencodedParser, function (req, res) {
     console.log(req);
     console.log("**************");
     console.log(req.body);
-    // var checkNameQuery = util.format("SELECT * FROM Users WHERE username = '%s'", req.body.username);
-    // var nameExists = false;
-    // client.query(checkNameQuery);
 
-    done();
+    var user_id = 0;
+    var usernameQuery = util.format("SELECT id FROM Users WHERE username = '%s';", req.body.username);
+    var location_id = 0;
+    var locationQuery = util.format("SELECT id FROM Location WHERE name = '%s';", req.body.location);
+
+    var start_time = req.body.start_time.substring(0, 19);
+    var end_time = req.body.end_time.substring(0, 19);
+
+    client.query(usernameQuery).on('row', function(row){
+      user_id = row.id;
+    }).on("end", function() {
+      client.query(locationQuery).on('row', function(row){
+          location_id = row.id;
+      }).on("end", function() {
+          var query = util.format("INSERT INTO Post VALUES (%d, %d, %s, %s, %s, %s, now(), %d, 0, %s, %s, %s);", postid, location_id, req.body.title, req.body.description, start_time, end_time, user_id, req.body.tag1, req.body.tag2, req.body.tag3);
+          client.query(query).on('end', function() {
+            res.end();
+            done();
+          })
+      });  
+    });    
   });
 })
 
@@ -168,11 +204,11 @@ app.get('/login', function(req, res) {
       console.log(JSON.stringify(row));
     }).on("end", function() {
       if (response.length < 1) {
-        res.end("fail");
+        res.status(516).end("fail");
       } else if (response[0].password == req.query.password) {
         res.end("pass");
       } else {
-        res.end("fail");
+        res.status(516).end("fail");
       }
       console.log("LOGIN QUERY FINISHED *************");
       done();
