@@ -294,7 +294,7 @@ function formatDate (timestamp) {
 
 
 // DELETE posts if the end date is less than the current date
-function deleteOldPosts() {
+var deleteOldPosts = function() {
   console.log("deleting");
   pg.connect(db_url, function(err, client) {
     if (err) {
@@ -310,7 +310,7 @@ function deleteOldPosts() {
 
 
 // Set interval for deleting old posts
-// setInterval(deleteOldPosts(), 5000);
+setInterval(deleteOldPosts(), 5000);
 
 
 
