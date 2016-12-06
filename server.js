@@ -124,7 +124,7 @@ app.get('/login', function(req, res) {
 
     var query = util.format('SELECT password ' +
       'FROM Users ' + 
-      "WHERE name = '%s';", 
+      "WHERE username = '%s';", 
       req.query.username);
     console.log(query);
 
