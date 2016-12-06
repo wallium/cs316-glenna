@@ -27,6 +27,22 @@ tag_2 VARCHAR(256) REFERENCES Tags,
 tag_3 VARCHAR(256) REFERENCES Tags);
 
 
+CREATE OR REPLACE FUNCTION Remove_Dups()  
+RETURNS trigger AS  
+$$  
+BEGIN  
+    DELETE FROM Post WHERE reports >= 5;
+    RETURN NEW;  
+END;  
+$$  
+LANGUAGE 'plpgsql'; 
+
+
+CREATE TRIGGER Duplicate AFTER UPDATE OF reports ON Post
+FOR EACH ROW EXECUTE PROCEDURE Remove_Dups();
+
+
+
 # Test values
 INSERT INTO Users VALUES (1, 'William', 'password');
 INSERT INTO Users VALUES (2, 'Dennis', '12345678');
@@ -48,6 +64,7 @@ INSERT INTO Post VALUES (1, 1, 'FOOD', 'Free food!', '2016-12-15 12:00:00', '201
 INSERT INTO Post VALUES (2, 3, 'Prez', 'Obama', '2016-12-16 12:00:00', '2016-12-15 14:00:00', '2016-12-5 12:00:00', 3, 2, 'speaker', NULL, NULL);
 INSERT INTO Post VALUES (3, 1, 'Dance', 'DCD Auditions', '2016-12-14 18:00:00', '2016-12-14 20:00:00', '2016-12-3 13:00:00', 2, 0, 'club', NULL, NULL);
 
+INSERT INTO Post VALUES (4, 1, 'FOOD', 'Free food!', '2016-12-15 12:00:00', '2016-12-15 13:00:00', '2016-12-4 15:00:00', 1, 0, 'free food', NULL, NULL);
 
 UPDATE Location SET (x, y) = (36.001174, -78.941041)
 WHERE id = 1;
@@ -56,3 +73,11 @@ WHERE id = 2;
 UPDATE Location SET (x, y) = (36.000964, -78.938309)
 WHERE id = 3;
 UPDATE Location SET name = 'West Campus Bus Stop' WHERE id = 3;
+
+INSERT INTO Tags VALUES ('free');
+INSERT INTO Tags VALUES ('food');
+INSERT INTO Tags VALUES ('talk');
+INSERT INTO Tags VALUES ('art');
+INSERT INTO Tags VALUES ('dance');
+INSERT INTO Tags VALUES ('music');
+INSERT INTO Tags VALUES ('movie');
