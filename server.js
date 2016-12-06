@@ -76,16 +76,18 @@ app.post('/new_user', urlencodedParser, function (req, res) {
     }).on("end", function() {
       if (nameExists) {
         res.status(516).send();
+        done();
       } else {
         var query = util.format("INSERT INTO Users VALUES (%d, '%s', '%s');", userid, req.body.username, req.body.password);
         userid = userid+1;
         console.log(query);
         client.query(query).on("end", function() {
           res.status(200).send()
+          done();
         });
       }
     });
-    done();
+    
   });
 })
 
