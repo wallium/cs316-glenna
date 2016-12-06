@@ -301,7 +301,7 @@ function deleteOldPosts() {
       console.log("Ran into error");
       throw err;
     } 
-    var query = "DELETE FROM Posts WHERE (end_date - interval '5 hours') < now();";
+    var query = "DELETE FROM Post WHERE (end_date - interval '5 hours') < now();";
     console.log(query);
     client.query(query);
   });
@@ -309,9 +309,7 @@ function deleteOldPosts() {
 
 
 // Set interval for deleting old posts
-setInterval(function() {
-  deleteOldPosts();
-}, 5000);
+setInterval(deleteOldPosts, 5000);
 
 
 
