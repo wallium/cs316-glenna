@@ -310,7 +310,9 @@ var deleteOldPosts = function() {
 
 
 // Set interval for deleting old posts
-setInterval(deleteOldPosts(), 5000);
+setInterval(function() {
+  deleteOldPosts();
+}, 5000);
 
 
 
