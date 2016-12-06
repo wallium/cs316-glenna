@@ -33,13 +33,14 @@ app.get('/users', function(req, res) {
       console.log(JSON.stringify(row));
     }).on("end", function() {
       res.end(JSON.stringify(response));
+      done();
     });
   });
 })
 
 
 app.post('/users', urlencodedParser, function (req, res) {
-  pg.connect(db_url, function(err, client) {
+  pg.connect(db_url, function(err, client, done) {
     if (err) {
       console.log("Ran into error");
       throw err;
@@ -47,12 +48,14 @@ app.post('/users', urlencodedParser, function (req, res) {
     console.log(req.body);
     var query = "INSERT INTO USERS(id, username, password) VALUES(" + req.body.userid + ", '" + req.body.username + "', '" + req.body.password + "');";
     console.log(query);
-    client.query(query);
+    client.query(query).on("end", function() {
+      done();
+    });
   });
 })
 
 app.post('/users/delete', urlencodedParser, function (req, res) {
-  pg.connect(db_url, function(err, client) {
+  pg.connect(db_url, function(err, client, done) {
     if (err) {
       console.log("Ran into error");
       throw err;
@@ -60,7 +63,9 @@ app.post('/users/delete', urlencodedParser, function (req, res) {
     console.log(req.body);
     var query = "DELETE FROM USERS;"
     console.log(query);
-    client.query(query);
+    client.query(query).on("end", function() {
+      done();
+    });
   });
 })
 
@@ -83,7 +88,7 @@ app.post('/users/delete', urlencodedParser, function (req, res) {
 // GET all locations
 app.get('/locations', function(req, res) {
   response = [];
-  pg.connect(db_url, function(err, client) {
+  pg.connect(db_url, function(err, client, done) {
     if (err) {
       console.log("Ran into error");
       throw err;
@@ -97,6 +102,7 @@ app.get('/locations', function(req, res) {
     }).on("end", function() {
       console.log("LOCATIONS QUERY FINISHED *************");
       res.end(JSON.stringify(response));
+      done();
     });
   });
 })
@@ -104,7 +110,7 @@ app.get('/locations', function(req, res) {
 // GET all tags
 app.get('/tags', function(req, res) {
   response = [];
-  pg.connect(db_url, function(err, client) {
+  pg.connect(db_url, function(err, client, done) {
     if (err) {
       console.log("Ran into error");
       throw err;
@@ -118,6 +124,7 @@ app.get('/tags', function(req, res) {
     }).on("end", function() {
       console.log("TAGS QUERY FINISHED *************");
       res.end(JSON.stringify(response));
+      done();
     });
   });
 })
@@ -125,7 +132,7 @@ app.get('/tags', function(req, res) {
 // GET validation for a log in
 app.get('/login', function(req, res) {
   response = [];
-  pg.connect(db_url, function(err, client) {
+  pg.connect(db_url, function(err, client, done) {
     if (err) {
       console.log("Ran into error");
       throw err;
@@ -153,6 +160,7 @@ app.get('/login', function(req, res) {
         res.end("fail");
       }
       console.log("LOGIN QUERY FINISHED *************");
+      done();
     });
   });
 })
@@ -160,7 +168,7 @@ app.get('/login', function(req, res) {
 // GET all posts by username
 app.get('/posts/username', function(req, res) {
   response = [];
-  pg.connect(db_url, function(err, client) {
+  pg.connect(db_url, function(err, client, done) {
     if (err) {
       console.log("Ran into error");
       throw err;
@@ -187,6 +195,7 @@ app.get('/posts/username', function(req, res) {
     }).on("end", function() {
       console.log("USERNAME QUERY FINISHED *************");
       res.end(JSON.stringify(response));
+      done();
     });
   });
 })
@@ -195,7 +204,7 @@ app.get('/posts/username', function(req, res) {
 // GET posts, filtered by tag
 app.get('/posts/tags', function(req, res) {
   response = [];
-  pg.connect(db_url, function(err, client) {
+  pg.connect(db_url, function(err, client, done) {
     if (err) {
       console.log("Ran into error");
       throw err;
@@ -229,6 +238,7 @@ app.get('/posts/tags', function(req, res) {
     }).on("end", function() {
       console.log("TAG QUERY FINISHED ************");
       res.end(JSON.stringify(response));
+      done();
     });
   });
 })
@@ -236,7 +246,7 @@ app.get('/posts/tags', function(req, res) {
 // GET posts, filtered by location
 app.get('/posts', function(req, res) {
   response = [];
-  pg.connect(db_url, function(err, client) {
+  pg.connect(db_url, function(err, client, done) {
     if (err) {
       console.log("Ran into error");
       throw err;
@@ -263,6 +273,7 @@ app.get('/posts', function(req, res) {
     }).on("end", function() {
       console.log("LOCATION QUERY FINISHED *************");
       res.end(JSON.stringify(response));
+      done();
     });
   });
 })
@@ -303,15 +314,16 @@ function deleteOldPosts() {
     } 
     var query = "DELETE FROM Post WHERE (end_time - interval '5 hours') < now();";
     console.log(query);
-    client.query(query);
-    done();
+    client.query(query).on("end", function() {
+      done();
+    });
   });
 }
 
 
 // Set interval for deleting old posts
-// setInterval(deleteOldPosts, 1800000);
-setInterval(deleteOldPosts, 1000);
+setInterval(deleteOldPosts, 1800000);
+// setInterval(deleteOldPosts, 1000);
 
 
 
