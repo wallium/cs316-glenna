@@ -56,6 +56,8 @@ app.post('/users/delete', urlencodedParser, function (req, res) {
 // POST Requests
 
 // POST a new user
+var userid = 10;
+
 app.post('/new_user', urlencodedParser, function (req, res) {
   pg.connect(db_url, function(err, client, done) {
     if (err) {
@@ -65,11 +67,24 @@ app.post('/new_user', urlencodedParser, function (req, res) {
     console.log(req);
     console.log("**************");
     console.log(req.body);
-    // var query = "DELETE FROM USERS;"
-    // console.log(query);
-    // client.query(query).on("end", function() {
-    //   done();
-    // });
+    var checkNameQuery = util.format("SELECT * FROM Users WHERE username = '%s'", req.body.username);
+    var nameExists = false;
+    client.query(checkNameQuery).on('row', function(row){
+      nameExists = true;
+      console.log("match:")
+      console.log(JSON.stringify(row));
+    }).on("end", function() {
+      if (nameExists) {
+        res.status(516).send();
+      } else {
+        var query = util.format("INSERT INTO Users VALUES (%d, '%s', '%s');", userid, req.body.username, req.body.password);
+        userid = userid+1;
+        console.log(query);
+        client.query(query).on("end", function() {
+          res.status(200).send()
+        });
+      }
+    });
     done();
   });
 })
