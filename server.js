@@ -20,22 +20,6 @@ app.get('/', function (req, res) {
 })
 
 
-
-app.post('/users', urlencodedParser, function (req, res) {
-  pg.connect(db_url, function(err, client, done) {
-    if (err) {
-      console.log("Ran into error");
-      throw err;
-    } 
-    console.log(req.body);
-    var query = "INSERT INTO USERS(id, username, password) VALUES(" + req.body.userid + ", '" + req.body.username + "', '" + req.body.password + "');";
-    console.log(query);
-    client.query(query).on("end", function() {
-      done();
-    });
-  });
-})
-
 app.post('/users/delete', urlencodedParser, function (req, res) {
   pg.connect(db_url, function(err, client, done) {
     if (err) {
@@ -56,8 +40,6 @@ app.post('/users/delete', urlencodedParser, function (req, res) {
 // POST Requests
 
 // POST a new user
-
-
 var userid = 10;
 pg.connect(db_url, function(err, client, done) {
   if (err) {
@@ -76,7 +58,6 @@ pg.connect(db_url, function(err, client, done) {
     done();
   });
 });
-
 
 app.post('/new_user', urlencodedParser, function (req, res) {
   pg.connect(db_url, function(err, client, done) {
@@ -107,12 +88,26 @@ app.post('/new_user', urlencodedParser, function (req, res) {
         });
       }
     });
-    
   });
 })
 
 
 // POST a new post
+app.post('/new_post', urlencodedParser, function (req, res) {
+  pg.connect(db_url, function(err, client, done) {
+    if (err) {
+      console.log("Ran into error");
+      throw err;
+    }
+    console.log(req);
+    console.log("**************");
+    console.log(req.body);
+    // var checkNameQuery = util.format("SELECT * FROM Users WHERE username = '%s'", req.body.username);
+    // var nameExists = false;
+    // client.query(checkNameQuery);
+  });
+})
+
 
 // POST a duplicate report
 
