@@ -68,8 +68,11 @@ pg.connect(db_url, function(err, client, done) {
 
   client.query(query).on('row', function(row){
     console.log(JSON.stringify(row));
+    userid = row.max + 1;
   }).on("end", function() {
-    console.log("MAX USERID FOUND *************");
+    console.log("MAX USERID FOUND*************");
+    console.log("Next userid:");
+    console.log(userid);
     done();
   });
 });
