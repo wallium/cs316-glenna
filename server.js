@@ -56,7 +56,24 @@ app.post('/users/delete', urlencodedParser, function (req, res) {
 // POST Requests
 
 // POST a new user
+
+
 var userid = 10;
+pg.connect(db_url, function(err, client, done) {
+  if (err) {
+    console.log("Ran into error");
+    throw err;
+  } 
+  var query = 'SELECT MAX(id) FROM Users;';
+
+  client.query(query).on('row', function(row){
+    console.log(JSON.stringify(row));
+  }).on("end", function() {
+    console.log("MAX USERID FOUND *************");
+    done();
+  });
+});
+
 
 app.post('/new_user', urlencodedParser, function (req, res) {
   pg.connect(db_url, function(err, client, done) {
