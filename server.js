@@ -301,7 +301,6 @@ function deleteOldPosts() {
       console.log("Ran into error");
       throw err;
     } 
-    console.log(req.body);
     var query = "DELETE FROM Posts WHERE (end_date - interval '5 hours' < now();";
     console.log(query);
     client.query(query);
