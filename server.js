@@ -135,7 +135,7 @@ app.get('/login', function(req, res) {
     }).on("end", function() {
       if (response.length < 1) {
         res.end("fail");
-      } else if (response[0].password == 'req.query.password') {
+      } else if (response[0].password == req.query.password) {
         res.end("pass");
       } else {
         res.end("fail");
