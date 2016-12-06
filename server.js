@@ -56,6 +56,24 @@ app.post('/users/delete', urlencodedParser, function (req, res) {
 // POST Requests
 
 // POST a new user
+app.post('/new_user', urlencodedParser, function (req, res) {
+  pg.connect(db_url, function(err, client, done) {
+    if (err) {
+      console.log("Ran into error");
+      throw err;
+    }
+    console.log(req);
+    console.log("**************");
+    console.log(req.body);
+    // var query = "DELETE FROM USERS;"
+    // console.log(query);
+    // client.query(query).on("end", function() {
+    //   done();
+    // });
+    done();
+  });
+})
+
 
 // POST a new post
 
@@ -304,7 +322,7 @@ function deleteOldPosts() {
 
 
 // Set interval for deleting old posts
-setInterval(deleteOldPosts, 1800000); // 30 minutes
+setInterval(deleteOldPosts, 6*1800000); // 6*30 minutes
 // setInterval(deleteOldPosts, 1000);
 
 
