@@ -204,13 +204,13 @@ app.get('/login', function(req, res) {
       console.log(JSON.stringify(row));
     }).on("end", function() {
       if (response.length < 1) {
-        res.status(516).end("fail");
+        res.status(516).send("fail");
         console.log("This user doesn't exist");
       } else if (response[0].password == req.query.password) {
-        res.end("pass");
+        res.send("pass");
         console.log("This login passed");
       } else {
-        res.status(516).end("fail");
+        res.status(516).send("fail");
         console.log("The password is incorrect");
       }
       console.log("LOGIN QUERY FINISHED *************");
