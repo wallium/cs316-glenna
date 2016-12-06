@@ -66,6 +66,18 @@ app.post('/users/delete', urlencodedParser, function (req, res) {
 
 
 // *************************************************************
+// POST Requests
+
+// POST a new user
+
+// POST a new post
+
+// POST a duplicate report
+
+
+
+
+// *************************************************************
 // GET Requests
 
 // GET all locations
@@ -282,24 +294,23 @@ function formatDate (timestamp) {
 
 
 // DELETE posts if the end date is less than the current date
-function deleteByDate(date) {
-  app.post('/posts/delete', urlencodedParser, function (req, res) {
-    pg.connect(db_url, function(err, client) {
-      if (err) {
-        console.log("Ran into error");
-        throw err;
-      } 
-      console.log(req.body);
-      var query = util.format("DELETE FROM Posts WHERE end_date < %d;", new Date().getTime); // Should store dates using PostgreSQL date type and convert JS date to right format.
-      console.log(query);
-      client.query(query);
-    });
+function deleteOldPosts(date) {
+  console.log("deleting");
+  pg.connect(db_url, function(err, client) {
+    if (err) {
+      console.log("Ran into error");
+      throw err;
+    } 
+    console.log(req.body);
+    var query = "DELETE FROM Posts WHERE (end_date - interval '5 hours' < now();";
+    console.log(query);
+    client.query(query);
   });
 }
 
 
 // Set interval for deleting old posts
-
+setInterval(deleteOldPosts(), 5000);
 
 
 
