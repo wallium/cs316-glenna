@@ -68,6 +68,27 @@ app.post('/users/delete', urlencodedParser, function (req, res) {
 // *************************************************************
 // GET Requests
 
+// GET all locations
+app.get('/locations', function(req, res) {
+  response = [];
+  pg.connect(db_url, function(err, client) {
+    if (err) {
+      console.log("Ran into error");
+      throw err;
+    } 
+    var query = 'SELECT name, x, y FROM Location;';
+
+    client.query(query).on('row', function(row){
+      response.push(row);
+      console.log("location:")
+      console.log(JSON.stringify(row));
+    }).on("end", function() {
+      console.log("LOCATIONS QUERY FINISHED *************");
+      res.end(JSON.stringify(response));
+    });
+  });
+})
+
 // GET all tags
 app.get('/tags', function(req, res) {
   response = [];
@@ -101,8 +122,8 @@ app.get('/login', function(req, res) {
     console.log(req.query);
     console.log("******************");
 
-    var query = util.format('SELECT password' +
-      'FROM Users' + 
+    var query = util.format('SELECT password ' +
+      'FROM Users ' + 
       "WHERE name = '%s';", 
       req.query.username);
     console.log(query);
