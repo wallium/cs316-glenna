@@ -207,7 +207,7 @@ app.get('/login', function(req, res) {
         res.status(516).send("fail");
         console.log("This user doesn't exist");
       } else if (response[0].password == req.query.password) {
-        res.send("pass");
+        res.status(200).send("pass");
         console.log("This login passed");
       } else {
         res.status(516).send("fail");
