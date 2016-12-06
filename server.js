@@ -304,7 +304,7 @@ function deleteOldPosts() {
     var query = "DELETE FROM Post WHERE (end_time - interval '5 hours') < now();";
     console.log(query);
     client.query(query);
-    // done();
+    done();
   });
 }
 
