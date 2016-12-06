@@ -296,7 +296,7 @@ function formatDate (timestamp) {
 // DELETE posts if the end date is less than the current date
 function deleteOldPosts() {
   console.log("deleting");
-  pg.connect(db_url, function(err, client) {
+  pg.connect(db_url, function(err, client, done) {
     if (err) {
       console.log("Ran into error");
       throw err;
@@ -304,12 +304,14 @@ function deleteOldPosts() {
     var query = "DELETE FROM Post WHERE (end_time - interval '5 hours') < now();";
     console.log(query);
     client.query(query);
+    // done();
   });
 }
 
 
 // Set interval for deleting old posts
-setInterval(deleteOldPosts, 1800000);
+// setInterval(deleteOldPosts, 1800000);
+setInterval(deleteOldPosts, 1000);
 
 
 
