@@ -19,24 +19,6 @@ app.get('/', function (req, res) {
   res.send('Hello World');
 })
 
-app.get('/users', function(req, res) {
-  response = [];
-  pg.connect(db_url, function(err, client) {
-    if (err) {
-      console.log("Ran into error");
-      throw err;
-    } 
-    var i = 0;
-    client.query('SELECT * from Users;').on('row', function(row){
-      response.push(row);
-      console.log("Content of Users:")
-      console.log(JSON.stringify(row));
-    }).on("end", function() {
-      res.end(JSON.stringify(response));
-      done();
-    });
-  });
-})
 
 
 app.post('/users', urlencodedParser, function (req, res) {
