@@ -146,6 +146,7 @@ app.post('/report', urlencodedParser, function (req, res) {
     console.log("**************");
     console.log(req.body);
 
+    req.body.post_id = parseInt(req.body.post_id);
     var reportsQuery = util.format("SELECT reports FROM Post WHERE id = %d;", req.body.post_id);
     var prev_reports = -1;
     client.query(reportsQuery).on('row', function(row){
