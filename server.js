@@ -136,7 +136,7 @@ function nullify(tag) {
 }
 
 // POST a duplicate report
-app.post('/new_post', urlencodedParser, function (req, res) {
+app.post('/report', urlencodedParser, function (req, res) {
   pg.connect(db_url, function(err, client, done) {
     if (err) {
       console.log("Ran into error");
