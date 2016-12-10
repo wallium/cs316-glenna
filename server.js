@@ -287,7 +287,7 @@ app.get('/posts/username', function(req, res) {
 
     var query = util.format('SELECT Post.id AS id, title, body, start_time, end_time, Users.username AS poster, tag_1, tag_2, tag_3, Location.name AS location ' +
       'FROM (Post INNER JOIN Location ON Post.location_id = Location.id) INNER JOIN Users ON Post.user_id = Users.id ' + 
-      "WHERE Users.username = '%s';", 
+      "WHERE Users.username = '%s' ORDER BY start_time ASC;", 
       req.query.username);
     console.log(query);
 
@@ -322,11 +322,11 @@ app.get('/posts/tags', function(req, res) {
     var query;
     if (req.query.tag == "" || req.query.tag == undefined || req.query.tag == null) {
       var query = 'SELECT Post.id AS id, title, body, start_time, end_time, Users.username AS poster, tag_1, tag_2, tag_3, Location.name AS location ' +
-      'FROM (Post INNER JOIN Location ON Post.location_id = Location.id) INNER JOIN Users on Post.user_id = Users.id;';
+      'FROM (Post INNER JOIN Location ON Post.location_id = Location.id) INNER JOIN Users on Post.user_id = Users.id ORDER BY start_time ASC;';
     } else {
       var query = util.format('SELECT Post.id AS id, title, body, start_time, end_time, Users.username AS poster, tag_1, tag_2, tag_3, Location.name AS location ' +
         'FROM (Post INNER JOIN Location ON Post.location_id = Location.id) INNER JOIN Users ON Post.user_id = Users.id ' + 
-        "WHERE tag_1 = '%s' OR tag_2 = '%s' OR tag_3 = '%s';", 
+        "WHERE tag_1 = '%s' OR tag_2 = '%s' OR tag_3 = '%s' ORDER BY start_time ASC;", 
         req.query.tag,
         req.query.tag,
         req.query.tag);
@@ -364,7 +364,7 @@ app.get('/posts', function(req, res) {
 
     var query = util.format('SELECT Post.id AS id, title, body, start_time, end_time, Users.username AS poster, tag_1, tag_2, tag_3 ' +
       'FROM (Post INNER JOIN Location ON Post.location_id = Location.id) INNER JOIN Users ON Post.user_id = Users.id ' + 
-      "WHERE Location.name = '%s';", 
+      "WHERE Location.name = '%s' ORDER BY start_time ASC;", 
       req.query.location);
     console.log(query);
 
