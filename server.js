@@ -6,6 +6,7 @@ var bodyParser = require('body-parser');
 const util = require('util');
 var db_url = process.env.DATABASE_URL;
 var cors = require('cors');
+var mysql = require('mysql');
 app.use(cors({credentials: true, origin: true}));
 
 // Create application/x-www-form-urlencoded parser
@@ -30,7 +31,7 @@ pg.connect(db_url, function(err, client, done) {
   } 
   var query = 'SELECT MAX(id) FROM Users;';
 
-  client.query(query).on('row', function(row){
+  client.query(mysql.escape(query)).on('row', function(row){
     console.log(JSON.stringify(row));
     userid = row.max + 1;
   }).on("end", function() {
@@ -51,7 +52,7 @@ app.post('/new_user', urlencodedParser, function (req, res) {
     console.log(req.body);
     var checkNameQuery = util.format("SELECT * FROM Users WHERE username = '%s'", req.body.username);
     var nameExists = false;
-    client.query(checkNameQuery).on('row', function(row){
+    client.query(mysql.escape(checkNameQuery)).on('row', function(row){
       nameExists = true;
       console.log("match:")
       console.log(JSON.stringify(row));
@@ -63,7 +64,7 @@ app.post('/new_user', urlencodedParser, function (req, res) {
         var query = util.format("INSERT INTO Users VALUES (%d, '%s', '%s');", userid, req.body.username, req.body.password);
         userid = userid+1;
         console.log(query);
-        client.query(query).on("end", function() {
+        client.query(mysql.escape(query)).on("end", function() {
           res.status(200).send()
           done();
         });
@@ -82,7 +83,7 @@ pg.connect(db_url, function(err, client, done) {
   } 
   var query = 'SELECT MAX(id) FROM Post;';
 
-  client.query(query).on('row', function(row){
+  client.query(mysql.escape(query)).on('row', function(row){
     console.log(JSON.stringify(row));
     postid = row.max + 1;
   }).on("end", function() {
@@ -111,15 +112,15 @@ app.post('/new_post', urlencodedParser, function (req, res) {
     var start_time = req.body.start_time.substring(0, 19);
     var end_time = req.body.end_time.substring(0, 19);
 
-    client.query(usernameQuery).on('row', function(row){
+    client.query(mysql.escape(usernameQuery)).on('row', function(row){
       user_id = row.id;
     }).on("end", function() {
-      client.query(locationQuery).on('row', function(row){
+      client.query(mysql.escape(locationQuery)).on('row', function(row){
           location_id = row.id;
       }).on("end", function() {
           var query = util.format("INSERT INTO Post VALUES (%d, %d, '%s', '%s', '%s', '%s', now(), %d, 0, %s, %s, %s);", postid, location_id, req.body.title, req.body.description, start_time, end_time, user_id, nullify(req.body.tag1), nullify(req.body.tag2), nullify(req.body.tag3));
           postid = postid + 1;
-          client.query(query).on('end', function() {
+          client.query(mysql.escape(query)).on('end', function() {
             res.end();
             done();
           })
@@ -148,12 +149,12 @@ app.post('/report', urlencodedParser, function (req, res) {
     req.body.post_id = parseInt(req.body.post_id);
     var reportsQuery = util.format("SELECT reports FROM Post WHERE id = %d;", req.body.post_id);
     var prev_reports = -1;
-    client.query(reportsQuery).on('row', function(row){
+    client.query(mysql.escape(reportsQuery)).on('row', function(row){
       prev_reports = row.reports;
     }).on('end', function() {
       if (prev_reports > -1) {
         var query = util.format("UPDATE Post SET (reports) = (%d) WHERE id = %d;", prev_reports + 1, req.body.post_id);
-        client.query(query).on('end', function() {
+        client.query(mysql.escape(query)).on('end', function() {
           done();
           res.end();
         });
@@ -178,7 +179,7 @@ app.post('/delete', urlencodedParser, function (req, res) {
 
     req.body.post_id = parseInt(req.body.post_id);
     var query = util.format("DELETE FROM Post WHERE id = %d;", req.body.post_id);
-    client.query(query).on('end', function() {
+    client.query(mysql.escape(query)).on('end', function() {
       console.log("DELETE QUERY FINISHED*********");
       res.end();
       done();
@@ -200,7 +201,7 @@ app.get('/locations', function(req, res) {
     } 
     var query = 'SELECT name, x, y FROM Location;';
 
-    client.query(query).on('row', function(row){
+    client.query(mysql.escape(query)).on('row', function(row){
       response.push(row);
       console.log("location:")
       console.log(JSON.stringify(row));
@@ -222,7 +223,7 @@ app.get('/tags', function(req, res) {
     } 
     var query = 'SELECT * FROM tags ORDER BY title ASC;';
 
-    client.query(query).on('row', function(row){
+    client.query(mysql.escape(query)).on('row', function(row){
       response.push(row);
       console.log("tag:")
       console.log(JSON.stringify(row));
@@ -252,7 +253,7 @@ app.get('/login', function(req, res) {
       req.query.username);
     console.log(query);
 
-    client.query(query).on('row', function(row){
+    client.query(mysql.escape(query)).on('row', function(row){
       response.push(row);
       console.log("password:")
       console.log(JSON.stringify(row));
@@ -291,7 +292,7 @@ app.get('/posts/username', function(req, res) {
       req.query.username);
     console.log(query);
 
-    client.query(query).on('row', function(row){
+    client.query(mysql.escape(query)).on('row', function(row){
       row.tag_1 = formatTag(row.tag_1);
       row.tag_2 = formatTag(row.tag_2);
       row.tag_3 = formatTag(row.tag_3);
@@ -333,7 +334,7 @@ app.get('/posts/tags', function(req, res) {
     }
     console.log(query);
 
-    client.query(query).on('row', function(row){
+    client.query(mysql.escape(query)).on('row', function(row){
       row.tag_1 = formatTag(row.tag_1);
       row.tag_2 = formatTag(row.tag_2);
       row.tag_3 = formatTag(row.tag_3);
@@ -368,7 +369,7 @@ app.get('/posts', function(req, res) {
       req.query.location);
     console.log(query);
 
-    client.query(query).on('row', function(row){
+    client.query(mysql.escape(query)).on('row', function(row){
       row.tag_1 = formatTag(row.tag_1);
       row.tag_2 = formatTag(row.tag_2);
       row.tag_3 = formatTag(row.tag_3);
