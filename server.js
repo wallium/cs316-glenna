@@ -142,7 +142,6 @@ app.post('/report', urlencodedParser, function (req, res) {
       console.log("Ran into error");
       throw err;
     }
-    console.log(req);
     console.log("**************");
     console.log(req.body);
 
@@ -153,13 +152,14 @@ app.post('/report', urlencodedParser, function (req, res) {
       prev_reports = row.reports;
     }).on('end', function() {
       if (prev_reports > -1) {
-        var query = util.format("UPDATE Post SET (reports) = %d WHERE id = %d;", prev_reports + 1, req.body.post_id);
+        var query = util.format("UPDATE Post SET (reports) = (%d) WHERE id = %d;", prev_reports + 1, req.body.post_id);
         client.query(query).on('end', function() {
           done();
         });
       } else {
         done();
       }
+      console.log("REPORT QUERY FINISHED*********");
     });  
   });
 })
