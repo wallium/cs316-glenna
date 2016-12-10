@@ -117,7 +117,7 @@ app.post('/new_post', urlencodedParser, function (req, res) {
       client.query(locationQuery).on('row', function(row){
           location_id = row.id;
       }).on("end", function() {
-          var query = util.format("INSERT INTO Post VALUES (%d, %d, '%s', '%s', '%s', '%s', now(), %d, 0, '%s', '%s', '%s');", postid, location_id, req.body.title, req.body.description, start_time, end_time, user_id, req.body.tag1, req.body.tag2, req.body.tag3);
+          var query = util.format("INSERT INTO Post VALUES (%d, %d, '%s', '%s', '%s', '%s', now(), %d, 0, '%s', '%s', '%s');", postid, location_id, req.body.title, req.body.description, start_time, end_time, user_id, nullify(req.body.tag1), nullify(req.body.tag2), nullify(req.body.tag3));
           postid = postid + 1;
           client.query(query).on('end', function() {
             res.end();
@@ -128,6 +128,12 @@ app.post('/new_post', urlencodedParser, function (req, res) {
   });
 })
 
+function nullify(tag) {
+  if (tag == ''){
+    return null;
+  }
+  return tag;
+}
 
 // POST a duplicate report
 
