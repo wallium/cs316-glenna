@@ -6,7 +6,6 @@ var bodyParser = require('body-parser');
 const util = require('util');
 var db_url = process.env.DATABASE_URL;
 var cors = require('cors');
-var mysql = require('mysql');
 app.use(cors({credentials: true, origin: true}));
 
 // Create application/x-www-form-urlencoded parser
@@ -50,7 +49,7 @@ app.post('/new_user', urlencodedParser, function (req, res) {
     }
     console.log("**************");
     console.log(req.body);
-    var checkNameQuery = util.format("SELECT * FROM Users WHERE username = '%s'", mysql.escape(req.body.username));
+    var checkNameQuery = util.format("SELECT * FROM Users WHERE username = '%s'", mreq.body.username);
     var nameExists = false;
     client.query(checkNameQuery).on('row', function(row){
       nameExists = true;
@@ -61,7 +60,7 @@ app.post('/new_user', urlencodedParser, function (req, res) {
         res.status(516).send();
         done();
       } else {
-        var query = util.format("INSERT INTO Users VALUES (%d, '%s', '%s');", userid, mysql.escape(req.body.username), mysql.escape(req.body.password));
+        var query = util.format("INSERT INTO Users VALUES (%d, '%s', '%s');", userid, req.body.username, req.body.password);
         userid = userid+1;
         console.log(query);
         client.query(query).on("end", function() {
@@ -105,9 +104,9 @@ app.post('/new_post', urlencodedParser, function (req, res) {
     console.log(req.body);
 
     var user_id = 0;
-    var usernameQuery = util.format("SELECT id FROM Users WHERE username = '%s';", mysql.escape(req.body.username));
+    var usernameQuery = util.format("SELECT id FROM Users WHERE username = '%s';", req.body.username);
     var location_id = 0;
-    var locationQuery = util.format("SELECT id FROM Location WHERE name = '%s';", mysql.escape(req.body.location));
+    var locationQuery = util.format("SELECT id FROM Location WHERE name = '%s';", req.body.location);
 
     var start_time = req.body.start_time.substring(0, 19);
     var end_time = req.body.end_time.substring(0, 19);
@@ -118,7 +117,7 @@ app.post('/new_post', urlencodedParser, function (req, res) {
       client.query(locationQuery).on('row', function(row){
           location_id = row.id;
       }).on("end", function() {
-          var query = util.format("INSERT INTO Post VALUES (%d, %d, '%s', '%s', '%s', '%s', now(), %d, 0, '%s', '%s', '%s');", postid, location_id, req.body.title, req.body.description, start_time, end_time, user_id, nullify(mysql.escape(req.body.tag1)), nullify(mysql.escape(req.body.tag2)), nullify(mysql.escape(req.body.tag3)));
+          var query = util.format("INSERT INTO Post VALUES (%d, %d, '%s', '%s', '%s', '%s', now(), %d, 0, '%s', '%s', '%s');", postid, location_id, req.body.title, req.body.description, start_time, end_time, user_id, nullify(req.body.tag1), nullify(req.body.tag2), nullify(req.body.tag3));
           postid = postid + 1;
           client.query(query).on('end', function() {
             res.end();
@@ -153,7 +152,7 @@ app.post('/report', urlencodedParser, function (req, res) {
       prev_reports = row.reports;
     }).on('end', function() {
       if (prev_reports > -1) {
-        var query = util.format("UPDATE Post SET (reports) = (%d) WHERE id = %d;", prev_reports + 1, mysql.escape(req.body.post_id));
+        var query = util.format("UPDATE Post SET (reports) = (%d) WHERE id = %d;", prev_reports + 1, req.body.post_id);
         client.query(query).on('end', function() {
           done();
           res.end();
@@ -178,7 +177,7 @@ app.post('/delete', urlencodedParser, function (req, res) {
     console.log(req.body);
 
     req.body.post_id = parseInt(req.body.post_id);
-    var query = util.format("DELETE FROM Post WHERE id = %d;", mysql.escape(req.body.post_id));
+    var query = util.format("DELETE FROM Post WHERE id = %d;", req.body.post_id);
     client.query(query).on('end', function() {
       console.log("DELETE QUERY FINISHED*********");
       res.end();
@@ -250,7 +249,7 @@ app.get('/login', function(req, res) {
     var query = util.format('SELECT password ' +
       'FROM Users ' + 
       "WHERE username = '%s';", 
-      mysql.escape(req.query.username));
+      req.query.username);
     console.log(query);
 
     client.query(query).on('row', function(row){
@@ -289,7 +288,7 @@ app.get('/posts/username', function(req, res) {
     var query = util.format("SELECT Post.id AS id, title, body, (start_time - interval '5 hours') AS start_time, (end_time - interval '5 hours') AS end_time, Users.username AS poster, tag_1, tag_2, tag_3, Location.name AS location " +
       'FROM (Post INNER JOIN Location ON Post.location_id = Location.id) INNER JOIN Users ON Post.user_id = Users.id ' + 
       "WHERE Users.username = '%s' ORDER BY start_time ASC;", 
-      mysql.escape(req.query.username));
+      req.query.username);
     console.log(query);
 
     client.query(query).on('row', function(row){
@@ -328,9 +327,9 @@ app.get('/posts/tags', function(req, res) {
       var query = util.format("SELECT Post.id AS id, title, body, (start_time - interval '5 hours') AS start_time, (end_time - interval '5 hours') AS end_time, Users.username AS poster, tag_1, tag_2, tag_3, Location.name AS location " +
         'FROM (Post INNER JOIN Location ON Post.location_id = Location.id) INNER JOIN Users ON Post.user_id = Users.id ' + 
         "WHERE tag_1 = '%s' OR tag_2 = '%s' OR tag_3 = '%s' ORDER BY start_time ASC;", 
-        mysql.escape(req.query.tag),
-        mysql.escape(req.query.tag),
-        mysql.escape(req.query.tag));
+        req.query.tag,
+        req.query.tag,
+        req.query.tag);
     }
     console.log(query);
 
@@ -366,7 +365,7 @@ app.get('/posts', function(req, res) {
     var query = util.format("SELECT Post.id AS id, title, body, (start_time - interval '5 hours') AS start_time, (end_time - interval '5 hours') AS end_time, Users.username AS poster, tag_1, tag_2, tag_3 " +
       'FROM (Post INNER JOIN Location ON Post.location_id = Location.id) INNER JOIN Users ON Post.user_id = Users.id ' + 
       "WHERE Location.name = '%s' ORDER BY start_time ASC;", 
-      mysql.escape(req.query.location));
+      req.query.location);
     console.log(query);
 
     client.query(query).on('row', function(row){
