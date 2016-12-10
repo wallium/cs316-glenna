@@ -177,7 +177,7 @@ app.post('/delete', urlencodedParser, function (req, res) {
     req.body.post_id = parseInt(req.body.post_id);
     var query = util.format("DELETE FROM Post WHERE id = %d;", req.body.post_id);
     client.query(query).on('end', function() {
-      console.log(DELETE QUERY FINISHED*********");
+      console.log("DELETE QUERY FINISHED*********");
       done();
     });
   });
