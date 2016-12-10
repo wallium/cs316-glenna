@@ -165,7 +165,23 @@ app.post('/report', urlencodedParser, function (req, res) {
 })
 
 // POST a delete post
+app.post('/delete', urlencodedParser, function (req, res) {
+  pg.connect(db_url, function(err, client, done) {
+    if (err) {
+      console.log("Ran into error");
+      throw err;
+    }
+    console.log("**************");
+    console.log(req.body);
 
+    req.body.post_id = parseInt(req.body.post_id);
+    var query = util.format("DELETE FROM Post WHERE id = %d;", req.body.post_id);
+    client.query(query).on('end', function() {
+      console.log(DELETE QUERY FINISHED*********");
+      done();
+    });
+  });
+})
 
 
 // *************************************************************
