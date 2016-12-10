@@ -430,7 +430,7 @@ function deleteOldPosts() {
 
 // Set interval for deleting old posts
 // setInterval(deleteOldPosts, 6*1800000); // 6*30 minutes
-// setInterval(deleteOldPosts, 1000);
+setInterval(deleteOldPosts, 60000);
 
 
 
