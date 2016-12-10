@@ -155,8 +155,10 @@ app.post('/report', urlencodedParser, function (req, res) {
         var query = util.format("UPDATE Post SET (reports) = (%d) WHERE id = %d;", prev_reports + 1, req.body.post_id);
         client.query(query).on('end', function() {
           done();
+          res.end();
         });
       } else {
+        res.end();
         done();
       }
       console.log("REPORT QUERY FINISHED*********");
@@ -178,6 +180,7 @@ app.post('/delete', urlencodedParser, function (req, res) {
     var query = util.format("DELETE FROM Post WHERE id = %d;", req.body.post_id);
     client.query(query).on('end', function() {
       console.log("DELETE QUERY FINISHED*********");
+      res.end();
       done();
     });
   });
