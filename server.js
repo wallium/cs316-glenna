@@ -107,7 +107,7 @@ app.post('/new_post', urlencodedParser, function (req, res) {
     var user_id = 0;
     var usernameQuery = util.format("SELECT id FROM Users WHERE username = '%s';", mysql.escape(req.body.username));
     var location_id = 0;
-    var locationQuery = util.format("SELECT id FROM Location WHERE name = '%s';", mysql.escape(req.body.location);
+    var locationQuery = util.format("SELECT id FROM Location WHERE name = '%s';", mysql.escape(req.body.location));
 
     var start_time = req.body.start_time.substring(0, 19);
     var end_time = req.body.end_time.substring(0, 19);
