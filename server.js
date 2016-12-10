@@ -136,7 +136,34 @@ function nullify(tag) {
 }
 
 // POST a duplicate report
+app.post('/new_post', urlencodedParser, function (req, res) {
+  pg.connect(db_url, function(err, client, done) {
+    if (err) {
+      console.log("Ran into error");
+      throw err;
+    }
+    console.log(req);
+    console.log("**************");
+    console.log(req.body);
 
+    var reportsQuery = util.format("SELECT reports FROM Post WHERE id = %d;", req.body.post_id);
+    var prev_reports = -1;
+    client.query(reportsQuery).on('row', function(row){
+      prev_reports = row.reports;
+    }).on('end', function() {
+      if (prev_reports > -1) {
+        var query = util.format("UPDATE Post SET (reports) = %d WHERE id = %d;", prev_reports + 1, req.body.post_id);
+        client.query(query).on('end', function() {
+          done();
+        });
+      } else {
+        done();
+      }
+    });  
+  });
+})
+
+// POST a delete post
 
 
 
@@ -316,7 +343,7 @@ app.get('/posts', function(req, res) {
     console.log(req.query);
     console.log("******************");
 
-    var query = util.format('SELECT title, body, start_time, end_time, Users.username AS poster, tag_1, tag_2, tag_3 ' +
+    var query = util.format('SELECT id, title, body, start_time, end_time, Users.username AS poster, tag_1, tag_2, tag_3 ' +
       'FROM (Post INNER JOIN Location ON Post.location_id = Location.id) INNER JOIN Users ON Post.user_id = Users.id ' + 
       "WHERE Location.name = '%s';", 
       req.query.location);
