@@ -50,7 +50,7 @@ app.post('/new_user', urlencodedParser, function (req, res) {
     }
     console.log("**************");
     console.log(req.body);
-    var checkNameQuery = util.format("SELECT * FROM Users WHERE username = '%s'", mysql.escape(req.body.username));
+    var checkNameQuery = util.format("SELECT * FROM Users WHERE username = %s", mysql.escape(req.body.username));
     var nameExists = false;
     client.query(checkNameQuery).on('row', function(row){
       nameExists = true;
@@ -61,7 +61,7 @@ app.post('/new_user', urlencodedParser, function (req, res) {
         res.status(516).send();
         done();
       } else {
-        var query = util.format("INSERT INTO Users VALUES (%d, '%s', '%s');", userid, mysql.escape(req.body.username), mysql.escape(req.body.password));
+        var query = util.format("INSERT INTO Users VALUES (%d, %s, %s);", userid, mysql.escape(req.body.username), mysql.escape(req.body.password));
         userid = userid+1;
         console.log(query);
         client.query(query).on("end", function() {
@@ -105,9 +105,9 @@ app.post('/new_post', urlencodedParser, function (req, res) {
     console.log(req.body);
 
     var user_id = 0;
-    var usernameQuery = util.format("SELECT id FROM Users WHERE username = '%s';", mysql.escape(req.body.username));
+    var usernameQuery = util.format("SELECT id FROM Users WHERE username = %s;", mysql.escape(req.body.username));
     var location_id = 0;
-    var locationQuery = util.format("SELECT id FROM Location WHERE name = '%s';", mysql.escape(req.body.location));
+    var locationQuery = util.format("SELECT id FROM Location WHERE name = %s;", mysql.escape(req.body.location));
 
     var start_time = req.body.start_time.substring(0, 19);
     var end_time = req.body.end_time.substring(0, 19);
@@ -118,7 +118,7 @@ app.post('/new_post', urlencodedParser, function (req, res) {
       client.query(locationQuery).on('row', function(row){
           location_id = row.id;
       }).on("end", function() {
-          var query = util.format("INSERT INTO Post VALUES (%d, %d, '%s', '%s', '%s', '%s', now(), %d, 0, %s, %s, %s);", postid, location_id, req.body.title, req.body.description, start_time, end_time, user_id, nullify(req.body.tag1), nullify(mysql.escape(req.body.tag2)), nullify(mysql.escape(req.body.tag3)));
+          var query = util.format("INSERT INTO Post VALUES (%d, %d, %s, %s, '%s', '%s', now(), %d, 0, %s, %s, %s);", postid, location_id, req.body.title, req.body.description, start_time, end_time, user_id, nullify(mysql.escape(req.body.tag1)), nullify(mysql.escape(req.body.tag2)), nullify(mysql.escape(req.body.tag3)));
           postid = postid + 1;
           client.query(query).on('end', function() {
             res.end();
@@ -249,7 +249,7 @@ app.get('/login', function(req, res) {
 
     var query = util.format('SELECT password ' +
       'FROM Users ' + 
-      "WHERE username = '%s';", 
+      "WHERE username = %s;", 
       mysql.escape(req.query.username));
     console.log(query);
 
@@ -288,7 +288,7 @@ app.get('/posts/username', function(req, res) {
 
     var query = util.format("SELECT Post.id AS id, title, body, (start_time - interval '5 hours') AS start_time, (end_time - interval '5 hours') AS end_time, Users.username AS poster, tag_1, tag_2, tag_3, Location.name AS location " +
       'FROM (Post INNER JOIN Location ON Post.location_id = Location.id) INNER JOIN Users ON Post.user_id = Users.id ' + 
-      "WHERE Users.username = '%s' ORDER BY start_time ASC;", 
+      "WHERE Users.username = %s ORDER BY start_time ASC;", 
       mysql.escape(req.query.username));
     console.log(query);
 
@@ -327,7 +327,7 @@ app.get('/posts/tags', function(req, res) {
     } else {
       var query = util.format("SELECT Post.id AS id, title, body, (start_time - interval '5 hours') AS start_time, (end_time - interval '5 hours') AS end_time, Users.username AS poster, tag_1, tag_2, tag_3, Location.name AS location " +
         'FROM (Post INNER JOIN Location ON Post.location_id = Location.id) INNER JOIN Users ON Post.user_id = Users.id ' + 
-        "WHERE tag_1 = '%s' OR tag_2 = '%s' OR tag_3 = '%s' ORDER BY start_time ASC;", 
+        "WHERE tag_1 = %s OR tag_2 = %s OR tag_3 = %s ORDER BY start_time ASC;", 
         mysql.escape(req.query.tag),
         mysql.escape(req.query.tag),
         mysql.escape(req.query.tag));
@@ -365,7 +365,7 @@ app.get('/posts', function(req, res) {
 
     var query = util.format("SELECT Post.id AS id, title, body, (start_time - interval '5 hours') AS start_time, (end_time - interval '5 hours') AS end_time, Users.username AS poster, tag_1, tag_2, tag_3 " +
       'FROM (Post INNER JOIN Location ON Post.location_id = Location.id) INNER JOIN Users ON Post.user_id = Users.id ' + 
-      "WHERE Location.name = '%s' ORDER BY start_time ASC;", 
+      "WHERE Location.name = %s ORDER BY start_time ASC;", 
       mysql.escape(req.query.location));
     console.log(query);
 
