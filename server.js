@@ -317,7 +317,6 @@ app.get('/posts/tags', function(req, res) {
       console.log("Ran into error");
       throw err;
     } 
-    var i = 0;
     console.log(req.query);
     console.log("******************");
     var query;
