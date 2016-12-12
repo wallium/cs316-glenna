@@ -117,7 +117,7 @@ app.post('/new_post', urlencodedParser, function (req, res) {
       client.query(locationQuery).on('row', function(row){
           location_id = row.id;
       }).on("end", function() {
-          var query = util.format("INSERT INTO Post VALUES (%d, %d, %s, %s, %s, %s, now(), %d, 0, %s, %s, %s);", postid, location_id, req.body.title.replace(/'/g, "''"), req.body.description.replace(/'/g, "''"), start_time, end_time, user_id, nullify(mysql.escape(req.body.tag1)), nullify(mysql.escape(req.body.tag2)), nullify(mysql.escape(req.body.tag3)));
+          var query = util.format("INSERT INTO Post VALUES (%d, %d, '%s', '%s', %s, %s, now(), %d, 0, %s, %s, %s);", postid, location_id, req.body.title.replace(/'/g, "''"), req.body.description.replace(/'/g, "''"), start_time, end_time, user_id, nullify(mysql.escape(req.body.tag1)), nullify(mysql.escape(req.body.tag2)), nullify(mysql.escape(req.body.tag3)));
           postid = postid + 1;
           client.query(query).on('end', function() {
             res.end();
