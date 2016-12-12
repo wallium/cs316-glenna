@@ -129,7 +129,7 @@ app.post('/new_post', urlencodedParser, function (req, res) {
 })
 
 function nullify(tag) {
-  if (tag == ''){
+  if (tag == "''" || tag == ''){
     return "NULL";
   }
   return tag;
