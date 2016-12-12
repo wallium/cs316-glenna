@@ -100,7 +100,6 @@ app.post('/new_post', urlencodedParser, function (req, res) {
       console.log("Ran into error");
       throw err;
     }
-    console.log(req);
     console.log("**************");
     console.log(req.body);
 
@@ -118,7 +117,7 @@ app.post('/new_post', urlencodedParser, function (req, res) {
       client.query(locationQuery).on('row', function(row){
           location_id = row.id;
       }).on("end", function() {
-          var query = util.format("INSERT INTO Post VALUES (%d, %d, %s, %s, %s, %s, now(), %d, 0, %s, %s, %s);", postid, location_id, mysql.escape(req.body.title), mysql.escape(req.body.description), start_time, end_time, user_id, nullify(mysql.escape(req.body.tag1)), nullify(mysql.escape(req.body.tag2)), nullify(mysqle.escape(req.body.tag3)));
+          var query = util.format("INSERT INTO Post VALUES (%d, %d, %s, %s, %s, %s, now(), %d, 0, %s, %s, %s);", postid, location_id, mysql.escape(req.body.title), mysql.escape(req.body.description), start_time, end_time, user_id, nullify(mysql.escape(req.body.tag1)), nullify(mysql.escape(req.body.tag2)), nullify(mysql.escape(req.body.tag3)));
           postid = postid + 1;
           client.query(query).on('end', function() {
             res.end();
@@ -449,5 +448,3 @@ var server = app.listen(port_number, function () {
   console.log(process.env.DATABASE_URL);
 })
 
-console.log(23456789876543);
-console.log(mysql.escape(58585858585));;
