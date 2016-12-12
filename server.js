@@ -331,10 +331,10 @@ app.get('/posts/tags', function(req, res) {
     } else {
       var query = util.format("SELECT Post.id AS id, title, body, (start_time - interval '5 hours') AS start_time, (end_time - interval '5 hours') AS end_time, Users.username AS poster, tag_1, tag_2, tag_3, Location.name AS location " +
         'FROM (Post INNER JOIN Location ON Post.location_id = Location.id) INNER JOIN Users ON Post.user_id = Users.id ' + 
-        "WHERE tag_1 = '%s' OR tag_2 = '%s' OR tag_3 = '%s' ORDER BY start_time ASC;", 
-        req.query.tag,
-        req.query.tag,
-        req.query.tag);
+        "WHERE tag_1 = %s OR tag_2 = %s OR tag_3 = %s ORDER BY start_time ASC;", 
+        mysql.escape(req.query.tag),
+        mysql.escape(req.query.tag),
+        mysql.escape(req.query.tag);
     }
     console.log(query);
 
