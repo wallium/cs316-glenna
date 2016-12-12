@@ -6,6 +6,7 @@ var bodyParser = require('body-parser');
 const util = require('util');
 var db_url = process.env.DATABASE_URL;
 var cors = require('cors');
+var mysql = require('mysql');
 app.use(cors({credentials: true, origin: true}));
 
 // Create application/x-www-form-urlencoded parser
@@ -319,6 +320,10 @@ app.get('/posts/tags', function(req, res) {
     } 
     console.log(req.query);
     console.log("******************");
+    console.log(req.query.tag);
+    console.log(mysql.escape(req.query.tag));
+    console.log("~~~~~~~~~~~~~~~~~~");
+
     var query;
     if (req.query.tag == "" || req.query.tag == undefined || req.query.tag == null) {
       var query = "SELECT Post.id AS id, title, body, (start_time - interval '5 hours') AS start_time, (end_time - interval '5 hours') AS end_time, Users.username AS poster, tag_1, tag_2, tag_3, Location.name AS location " +
