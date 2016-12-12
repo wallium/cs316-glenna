@@ -50,7 +50,7 @@ app.post('/new_user', urlencodedParser, function (req, res) {
     }
     console.log("**************");
     console.log(req.body);
-    var checkNameQuery = util.format("SELECT * FROM Users WHERE username = '%s'", mreq.body.username);
+    var checkNameQuery = util.format("SELECT * FROM Users WHERE username = %s", mysql.escape(req.body.username));
     var nameExists = false;
     client.query(checkNameQuery).on('row', function(row){
       nameExists = true;
@@ -61,7 +61,7 @@ app.post('/new_user', urlencodedParser, function (req, res) {
         res.status(516).send();
         done();
       } else {
-        var query = util.format("INSERT INTO Users VALUES (%d, '%s', '%s');", userid, req.body.username, req.body.password);
+        var query = util.format("INSERT INTO Users VALUES (%d, %s, %s);", mysql.escape(userid), mysql.escape(req.body.username), mysql.escape(req.body.password));
         userid = userid+1;
         console.log(query);
         client.query(query).on("end", function() {
@@ -105,12 +105,12 @@ app.post('/new_post', urlencodedParser, function (req, res) {
     console.log(req.body);
 
     var user_id = 0;
-    var usernameQuery = util.format("SELECT id FROM Users WHERE username = '%s';", req.body.username);
+    var usernameQuery = util.format("SELECT id FROM Users WHERE username = %s;", mysql.escape(req.body.username));
     var location_id = 0;
-    var locationQuery = util.format("SELECT id FROM Location WHERE name = '%s';", req.body.location);
+    var locationQuery = util.format("SELECT id FROM Location WHERE name = %s;", mysql.escape(req.body.location));
 
-    var start_time = req.body.start_time.substring(0, 19);
-    var end_time = req.body.end_time.substring(0, 19);
+    var start_time = mysql.escape(req.body.start_time.substring(0, 19));
+    var end_time = mysql.escape(req.body.end_time.substring(0, 19));
 
     client.query(usernameQuery).on('row', function(row){
       user_id = row.id;
@@ -118,7 +118,7 @@ app.post('/new_post', urlencodedParser, function (req, res) {
       client.query(locationQuery).on('row', function(row){
           location_id = row.id;
       }).on("end", function() {
-          var query = util.format("INSERT INTO Post VALUES (%d, %d, '%s', '%s', '%s', '%s', now(), %d, 0, %s, %s, %s);", postid, location_id, req.body.title, req.body.description, start_time, end_time, user_id, nullify(req.body.tag1), nullify(req.body.tag2), nullify(req.body.tag3));
+          var query = util.format("INSERT INTO Post VALUES (%d, %d, %s, %s, %s, %s, now(), %d, 0, %s, %s, %s);", postid, location_id, mysql.escape(req.body.title), mysql.escape(req.body.description), start_time, end_time, user_id, nullify(mysql.escape(req.body.tag1)), nullify(mysql.escape(req.body.tag2)), nullify(mysqle.escape(req.body.tag3)));
           postid = postid + 1;
           client.query(query).on('end', function() {
             res.end();
@@ -133,7 +133,7 @@ function nullify(tag) {
   if (tag == ''){
     return "NULL";
   }
-  return "'" + tag + "'";
+  return tag;
 }
 
 // POST a duplicate report
@@ -147,13 +147,13 @@ app.post('/report', urlencodedParser, function (req, res) {
     console.log(req.body);
 
     req.body.post_id = parseInt(req.body.post_id);
-    var reportsQuery = util.format("SELECT reports FROM Post WHERE id = %d;", req.body.post_id);
+    var reportsQuery = util.format("SELECT reports FROM Post WHERE id = %d;", mysql.escape(req.body.post_id));
     var prev_reports = -1;
     client.query(reportsQuery).on('row', function(row){
       prev_reports = row.reports;
     }).on('end', function() {
       if (prev_reports > -1) {
-        var query = util.format("UPDATE Post SET (reports) = (%d) WHERE id = %d;", prev_reports + 1, req.body.post_id);
+        var query = util.format("UPDATE Post SET (reports) = (%d) WHERE id = %d;", prev_reports + 1, mysql.escape(req.body.post_id));
         client.query(query).on('end', function() {
           done();
           res.end();
