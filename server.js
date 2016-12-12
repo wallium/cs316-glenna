@@ -178,7 +178,7 @@ app.post('/delete', urlencodedParser, function (req, res) {
     console.log(req.body);
 
     req.body.post_id = parseInt(req.body.post_id);
-    var query = util.format("DELETE FROM Post WHERE id = %d;", req.body.post_id);
+    var query = util.format("DELETE FROM Post WHERE id = %d;", mysql.escape(req.body.post_id));
     client.query(query).on('end', function() {
       console.log("DELETE QUERY FINISHED*********");
       res.end();
@@ -249,8 +249,8 @@ app.get('/login', function(req, res) {
 
     var query = util.format('SELECT password ' +
       'FROM Users ' + 
-      "WHERE username = '%s';", 
-      req.query.username);
+      "WHERE username = %s;", 
+      mysql.escape(req.query.username));
     console.log(query);
 
     client.query(query).on('row', function(row){
@@ -288,8 +288,8 @@ app.get('/posts/username', function(req, res) {
 
     var query = util.format("SELECT Post.id AS id, title, body, (start_time - interval '5 hours') AS start_time, (end_time - interval '5 hours') AS end_time, Users.username AS poster, tag_1, tag_2, tag_3, Location.name AS location " +
       'FROM (Post INNER JOIN Location ON Post.location_id = Location.id) INNER JOIN Users ON Post.user_id = Users.id ' + 
-      "WHERE Users.username = '%s' ORDER BY start_time ASC;", 
-      req.query.username);
+      "WHERE Users.username = %s ORDER BY start_time ASC;", 
+      mysql.escape(req.query.username));
     console.log(query);
 
     client.query(query).on('row', function(row){
@@ -369,8 +369,8 @@ app.get('/posts', function(req, res) {
 
     var query = util.format("SELECT Post.id AS id, title, body, (start_time - interval '5 hours') AS start_time, (end_time - interval '5 hours') AS end_time, Users.username AS poster, tag_1, tag_2, tag_3 " +
       'FROM (Post INNER JOIN Location ON Post.location_id = Location.id) INNER JOIN Users ON Post.user_id = Users.id ' + 
-      "WHERE Location.name = '%s' ORDER BY start_time ASC;", 
-      req.query.location);
+      "WHERE Location.name = %s ORDER BY start_time ASC;", 
+      mysql.escape(req.query.location));
     console.log(query);
 
     client.query(query).on('row', function(row){
@@ -448,3 +448,6 @@ var server = app.listen(port_number, function () {
   console.log("Database is at:");
   console.log(process.env.DATABASE_URL);
 })
+
+
+mysql.escape(58585858585);
