@@ -334,7 +334,7 @@ app.get('/posts/tags', function(req, res) {
         "WHERE tag_1 = %s OR tag_2 = %s OR tag_3 = %s ORDER BY start_time ASC;", 
         mysql.escape(req.query.tag),
         mysql.escape(req.query.tag),
-        mysql.escape(req.query.tag);
+        mysql.escape(req.query.tag))
     }
     console.log(query);
 
